@@ -1,6 +1,6 @@
 #include "basic_element.h"
 
-coordinate::coordinate(double px,double py,double pz):x(px),y(py),z(pz){}
+//coordinate::coordinate(double px,double py,double pz):x(px),y(py),z(pz){}
 
 double coordinate::length() const{
   return std::sqrt(x*x + y*y + z*z);

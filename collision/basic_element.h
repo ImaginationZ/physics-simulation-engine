@@ -7,9 +7,11 @@ class coordinate{
   double x;
   double y;
   double z;
-    
+
   coordinate(){};
-  coordinate(double,double,double);
+  coordinate(double a,double b,double c)
+		:x(a),y(b),z(c)
+	{}
   ~coordinate(){};
 
 
@@ -30,7 +32,7 @@ coordinate operator+(const coordinate&,const coordinate&);
   coordinate operator-(const coordinate&);
 coordinate operator-(const coordinate&,const coordinate&);
 //vector scalar multiplication
-coordinate operator*(const double&,const coordinate&);
+coordinate operator*(double const&,coordinate const&);
 coordinate operator/(const coordinate&,const double&);
 coordinate operator*(const coordinate&,const double&);
 //vector dot product
@@ -66,13 +68,27 @@ class point{
   coordinate acceleration;
  public:
   point();
-  ~point();
+  point(coordinate a,coordinate b):position(a),velosity(b) {}
+  ~point(){}
 
-  coordinate ask_position();
-  coordinate ask_velosity();
+  coordinate ask_position()
+  {
+  	return position;
+  }
+  coordinate ask_velosity()
+  {
+  	return velosity;
+  }
   coordinate ask_acceleration();
   //move point by certain distance
-  void move(coordinate);
+  void move(coordinate a)
+  {
+  	position=position+a;
+  }
+  void set_velosity(coordinate a)
+  {
+  	velosity=a;
+  }
   //move point to certain position
   void moveto(coordinate);
 };
@@ -83,8 +99,16 @@ class mass_point:public point
  private:
   double mass;
  public:
+  mass_point(coordinate a,coordinate b,double c):
+		point(a,b),mass(c)
+  {}
+  ~mass_point(){}
   //return the force this mass point is applied
   coordinate ask_force();
+  double get_mass()
+  {
+  	return mass;
+  }
 };
 
 // A defination of point charge, a basic object in electromagnetic model
