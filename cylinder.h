@@ -8,7 +8,7 @@ private:
     coordinate speed;
 public:
     cylinder(double x,double y,double z,double ax,double ay,double az,double m,double h,double r)
-    :mass_point(coordinate(x,y,z),coordinate(0,0,0),m),radius(r),height(h),axis(ax,ay,az),moment(0,0,0),speed(0.1,0.5,1){}
+    :mass_point(coordinate(x,y,z),coordinate(0,0,0),m),radius(r),height(h),axis(ax,ay,az),moment(0,0,0),speed(0,0,0){}
     coordinate get_nearest(point* p){
         coordinate pos = p->ask_position() - ask_position();
         double h = dot(pos,axis.unit());
@@ -44,9 +44,9 @@ public:
         return get_mass()*(get_radius()*get_radius()+get_height()*get_height()/6);
     }
     void motivate(double delta_time){
-      //  speed = delta_time * moment / get_inertial() + speed;
+        speed = delta_time * moment / get_inertial() + speed;
         axis = axis + delta_time * cross(speed,axis);
-     //   axis = axis.unit();
+        axis = axis.unit();
     }
 };
 

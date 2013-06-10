@@ -11,7 +11,7 @@
 //#include "FreeType.h"
 #include <cmath>
 
-
+const double pi = 3.141592653;
 const GLfloat lightAmbient[] = { 1.0, 1.0, 1.0, 1.0 };
 const GLfloat lightDiffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 const GLfloat lightPosition[] = { 0.0, 0.0, -20.0, 1.0 };
@@ -260,54 +260,88 @@ static void display(void)
 //----------------------------------------------------------------//
 
 
-    glPushMatrix();
+
     glEnable( GL_BLEND );
     glDepthMask(GL_FALSE);
+    glPushMatrix();
 
+    vec = a->c->get_axis();
+
+    if(fabs(vec.y)>1e-8)
+    {
+        if(fabs(vec.x)<1e-8)glRotatef((vec.y/fabs(vec.y))*90,0.0,1.0,0.0);
+        else if(fabs(vec.x)>1e-8)glRotatef((vec.y/fabs(vec.y))*angle(coordinate(1,0,0),coordinate(vec.x,vec.y,0))/pi*180,0.0,1.0,0.0);
+    }
+
+    if(fabs(vec.z)>1e-8)
+    {
+        if(fabs(vec.x)<1e-8&&fabs(vec.y)<1e-8)glRotatef(-(vec.z/fabs(vec.z))*90,1.0,0.0,0.0);
+        else glRotatef(-(vec.z/fabs(vec.z))*angle(coordinate(vec.x,vec.y,0),coordinate(vec.x,vec.y,vec.z))/pi*180,1.0,0.0,0.0);
+    }
+
+    vec = a->c->ask_position();
+    glTranslatef(-5.0,-5.0,-5.0-a->c->get_height()/2);
+    glTranslatef(vec.x,vec.z,vec.y);
+    gluCylinder(quadratic,a->c->get_radius(),a->c->get_radius(),a->c->get_height(),32,32);
+    glPopMatrix();
+
+
+    glPushMatrix();
     glBindTexture(GL_TEXTURE_2D, texture[0]);
     glMaterialfv(GL_FRONT,GL_AMBIENT,mat_ambient_o);
     glMaterialfv(GL_FRONT,GL_DIFFUSE,mat_diffuse_o);
     glMaterialfv(GL_FRONT,GL_SPECULAR,mat_specular_o);
     glMaterialfv(GL_FRONT,GL_SHININESS,mat_shininess_o);
     glEnable(GL_TEXTURE_2D);
-    glColor3f(0.5,0.5,0.5);
 
-    vec = a->c->get_axis();
-    if(abs(vec.y)>1e-8)glRotatef(atanf(vec.x/vec.y),0.0,1.0,0.0);
-    if(abs(vec.y)<1e-8&&abs(vec.x)<1e-8)
-    {
-        glRotatef(vec.z/abs(vec.z)*90,1.0,0.0,0.0);
-    }
-    else glRotatef(atanf(vec.z/sqrt(pow(vec.x,2)+pow(vec.y,2))),1.0,0.0,0.0);
-    vec = a->c->ask_position();
-    glTranslatef(-5.0,-5.0,-5.0-a->c->get_height()/2);
-    glTranslatef(vec.x,vec.z,vec.y);
-    gluCylinder(quadratic,a->c->get_radius(),a->c->get_radius(),a->c->get_height(),32,32);
+    glScalef(5.0,5.0,5.0);
+    glBegin(GL_QUADS);
+      glNormal3f(  0.0,  0.0, 1.0 );
+      glTexCoord2f(0.0, 0.0 ); glVertex3f( -1.0, -1.0,  1.0 );
+      glTexCoord2f(1.0, 0.0 ); glVertex3f(  1.0, -1.0,  1.0 );
+      glTexCoord2f( 1.0, 1.0 ); glVertex3f(  1.0,  1.0,  1.0 );
+      glTexCoord2f( 0.0, 1.0 );glVertex3f( -1.0,  1.0,  1.0 );
+
+      glNormal3f(  0.0,  0.0, -1.0 );
+      glTexCoord2f(1.0, 0.0 ); glVertex3f( -1.0, -1.0, -1.0 );
+      glTexCoord2f(1.0, 1.0 ); glVertex3f( -1.0,  1.0, -1.0 );
+      glTexCoord2f(0.0, 1.0 ); glVertex3f(  1.0,  1.0, -1.0 );
+      glTexCoord2f(0.0, 0.0 ); glVertex3f(  1.0, -1.0, -1.0 );
+
+      glNormal3f(  1.0,  0.0,  0.0 );
+      glTexCoord2f(1.0, 0.0 ); glVertex3f(  1.0, -1.0, -1.0 );
+      glTexCoord2f(1.0, 1.0 ); glVertex3f(  1.0,  1.0, -1.0 );
+      glTexCoord2f(0.0, 1.0 ); glVertex3f(  1.0,  1.0,  1.0 );
+      glTexCoord2f(0.0, 0.0 ); glVertex3f(  1.0, -1.0,  1.0 );
+
+      glNormal3f( -1.0,  0.0,  0.0 );
+      glTexCoord2f(0.0, 0.0 ); glVertex3f( -1.0, -1.0, -1.0 );
+      glTexCoord2f(1.0, 0.0 ); glVertex3f( -1.0, -1.0,  1.0 );
+      glTexCoord2f(1.0, 1.0 ); glVertex3f( -1.0,  1.0,  1.0 );
+      glTexCoord2f(0.0, 1.0 ); glVertex3f( -1.0,  1.0, -1.0 );
+
+      glNormal3f(  0.0,  1.0,  0.0 );
+      glTexCoord2f( 0.0, 1.0 ); glVertex3f( -1.0,  1.0, -1.0 );
+      glTexCoord2f(0.0, 0.0 ); glVertex3f( -1.0,  1.0,  1.0 );
+      glTexCoord2f( 1.0, 0.0 ); glVertex3f(  1.0,  1.0,  1.0 );
+      glTexCoord2f( 1.0, 1.0 ); glVertex3f(  1.0,  1.0, -1.0 );
+
+      glNormal3f(  0.0, -1.0,  0.0 );
+      glTexCoord2f(1.0, 1.0 ); glVertex3f( -1.0, -1.0, -1.0 );
+      glTexCoord2f(0.0, 1.0 );glVertex3f(  1.0, -1.0, -1.0 );
+      glTexCoord2f(0.0, 0.0 ); glVertex3f(  1.0, -1.0,  1.0 );
+      glTexCoord2f(1.0, 0.0 ); glVertex3f( -1.0, -1.0,  1.0 );
+    glEnd();
+    glPopMatrix();
+
     glDisable( GL_BLEND );
     glDisable(GL_TEXTURE_2D);
     glDepthMask(GL_TRUE);
-    glPopMatrix();
 
-    //glEnable(GL_BLEND);
-    glPushMatrix();
-    glLoadIdentity();
-    //ShowHint();
-    glPopMatrix();
 
 /*/----------------------------------------------------------------------//
 
-    glMatrixMode( GL_PROJECTION );
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0.0,WindowWidth,WindowHeight,0.0);
-    glMatrixMode( GL_MODELVIEW );
 
-
-
-    glMatrixMode( GL_PROJECTION );
-    glPopMatrix();
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
 //-----------------------------------------------------------------/*/
 
     a->work();

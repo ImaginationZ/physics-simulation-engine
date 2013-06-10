@@ -36,7 +36,7 @@ class control{
 		eps=1e-8;
 		a=new elastic_ball*[n+5];
         w=new wall*[6];
-        c=new cylinder(5,5,5,0,0,1,10000,10,1);
+        c=new cylinder(5,5,5,0,0,1,10,10,1);
 		double R[9];
 		for (int i=0;i<n;++i)
         {
@@ -78,13 +78,13 @@ class control{
                 renew(a[i],w[j]);
             }
             set_elastic_force(a[i],c,delta_time);
-            set_gravity(a[i],Gra);
+          //  set_gravity(a[i],Gra);
 		}
 
 		//move point
 		for (int i=0;i<n;++i)
 			motivate(a[i]);
-        motivate(c);
+        //motivate(c);
         c->motivate(delta_time);
 	}
 

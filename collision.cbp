@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Debug">
 				<Option output="collision" prefix_auto="1" extension_auto="1" />
-				<Option object_output="../collision/.objs" />
+				<Option object_output="../collision/objs" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -43,6 +43,8 @@
 			<Add library="gdi32" />
 			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
 		</Linker>
+		<Unit filename="ArcBall.cpp" />
+		<Unit filename="ArcBall.h" />
 		<Unit filename="FreeImage.h" />
 		<Unit filename="FreeImagePlus.h" />
 		<Unit filename="ball.h" />
@@ -50,9 +52,9 @@
 		<Unit filename="basic_element.h" />
 		<Unit filename="control.cpp" />
 		<Unit filename="control.h" />
+		<Unit filename="cylinder.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="sys.cpp" />
-		<Unit filename="wall.cpp" />
 		<Unit filename="wall.h" />
 		<Extensions>
 			<code_completion />

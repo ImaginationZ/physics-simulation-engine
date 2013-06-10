@@ -77,5 +77,6 @@ bool vertical(const coordinate& x,const coordinate& y){
 
 double angle(const coordinate& x,const coordinate& y){
   if(x.ifNULL() || y.ifNULL()) return -1;
-  else return std::acos( (x*y)/(x.length()*y.length()));
+  double ans = std::acos( (x*y)/(x.length()*y.length()));
+  return(ans>0)? ans:-ans;
 }
