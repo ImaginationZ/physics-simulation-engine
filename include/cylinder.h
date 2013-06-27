@@ -14,14 +14,24 @@ public:
         double h = dot(pos,axis.unit());
         coordinate ph = h*axis.unit();
         coordinate pr = pos - ph;
-        if( 2*h < height && 2*h > -height)
-            return radius * pr.unit() + ask_position() + ph;
-        if( pr.length() < radius)
-            return height/2 * axis.unit() + pr + ask_position();
-        return height/2 * axis.unit() + radius * pr.unit() + ask_position();
+        if( 2*h < height && 2*h > -height){
+            if( pr.length() < radius){
+                if(radius-pr.length()>height/2-ph.length())
+                    return -height/2 * axis.unit() + pr + ask_position();
+                else
+                    return radius * pr.unit() + ask_position() + ph;
+            }
+            else
+                return (radius+0.5) * pr.unit() + ask_position() + ph;
+        }
+        return (height/2+0.5) * ph.unit() + (radius+0.5) * pr.unit() + ask_position();
     }
-    coordinate get_nearest(wall* w){
+
+    coordinate get_velosity( const coordinate &p ){
+        coordinate pos = p - ask_position( );
+        return ask_velosity( ) + cross( speed, pos );
     }
+
     void set_moment(coordinate m){
         moment = moment + m;
     }
@@ -39,6 +49,10 @@ public:
     coordinate get_axis()
     {
         return axis;
+    }
+    coordinate get_speed()
+    {
+        return speed;
     }
     double get_inertial(){
         return get_mass()*(get_radius()*get_radius()+get_height()*get_height()/6);

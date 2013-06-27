@@ -1,3 +1,5 @@
+#ifndef __basic_ele_h
+#define __basic_ele_h
 #include <cmath>
 
 //A defination of coordinate, a vector describe position, velosity or acceleration.
@@ -47,6 +49,7 @@ bool parrallel(const coordinate&,const coordinate&);
 bool vertical(const coordinate&,const coordinate&);
 //vector angle
 double angle(const coordinate&,const coordinate&);
+double cos_angle(const coordinate&,const coordinate&);
 
 // A defination of area, a cube in 3D-system
 class area{
@@ -79,18 +82,32 @@ class point{
   {
   	return velosity;
   }
-  coordinate ask_acceleration();
+  coordinate ask_acceleration()
+  {
+  	return acceleration;
+  }
+  void set_acceleration(coordinate a)
+  {
+  	acceleration=a;
+  }
   //move point by certain distance
   void move(coordinate a)
   {
   	position=position+a;
+  }
+  void vmove(coordinate a)
+  {
+  	velosity=velosity+a;
   }
   void set_velosity(coordinate a)
   {
   	velosity=a;
   }
   //move point to certain position
-  void moveto(coordinate);
+  void moveto(coordinate a)
+  {
+  	position=a;
+  }
 };
 
 // A defination of mass point, a basic object in physics model
@@ -98,13 +115,24 @@ class mass_point:public point
 {
  private:
   double mass;
+  coordinate force;
  public:
   mass_point(coordinate a,coordinate b,double c):
 		point(a,b),mass(c)
   {}
   ~mass_point(){}
   //return the force this mass point is applied
-  coordinate ask_force();
+  coordinate ask_force(){
+      return force;
+  }
+  //add to a force this mass point is applied
+  void set_force(const coordinate& f){
+      force = force + f;
+  }
+  void reset_force(){
+    force = coordinate(0,0,0);
+  }
+
   double get_mass()
   {
   	return mass;
@@ -134,3 +162,4 @@ class electromagnetic_field:public area
   coordinate E;//electric field intensity
   coordinate B;//magnetic field intensity
 };
+#endif

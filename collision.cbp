@@ -7,18 +7,23 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="collision" prefix_auto="1" extension_auto="1" />
-				<Option object_output="../collision/objs" />
+				<Option output="./collision" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="./" />
+				<Option object_output="./obj" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-I./include" />
 				</Compiler>
+				<Linker>
+					<Add library="opengl32" />
+				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/collision" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="D:/Program Files (x86)/CodeBlocks/MinGW/bin" />
-				<Option object_output="obj/Release/" />
+				<Option output="./collision" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="./" />
+				<Option object_output="./obj" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -31,31 +36,21 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/include" />
+			<Add option="-I./" />
 		</Compiler>
 		<Linker>
-			<Add library="C:\Program Files (x86)\CodeBlocks\MinGW\lib\FreeImage.lib" />
-			<Add library="C:\Program Files (x86)\CodeBlocks\MinGW\lib\glut32.lib" />
 			<Add library="glut32" />
 			<Add library="opengl32" />
 			<Add library="glu32" />
 			<Add library="winmm" />
 			<Add library="gdi32" />
-			<Add directory="C:/Program Files (x86)/CodeBlocks/MinGW/lib" />
+			<Add directory="./lib/" />
 		</Linker>
 		<Unit filename="ArcBall.cpp" />
-		<Unit filename="ArcBall.h" />
-		<Unit filename="FreeImage.h" />
-		<Unit filename="FreeImagePlus.h" />
-		<Unit filename="ball.h" />
 		<Unit filename="basic_element.cpp" />
-		<Unit filename="basic_element.h" />
 		<Unit filename="control.cpp" />
-		<Unit filename="control.h" />
-		<Unit filename="cylinder.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="sys.cpp" />
-		<Unit filename="wall.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

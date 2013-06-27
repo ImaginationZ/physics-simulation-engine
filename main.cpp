@@ -1,6 +1,6 @@
-#include "FreeImagePlus.h"
-#include <GL/glut.h>
-#include <GL/glext.h>
+#include <windows.h>
+#include "GL/glut.h"
+#include "GL/glext.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
@@ -8,21 +8,24 @@
 #include <vector>
 #include "control.h"
 #include "ArcBall.h"
-//#include "FreeType.h"
 #include <cmath>
 
 const double pi = 3.141592653;
 const GLfloat lightAmbient[] = { 1.0, 1.0, 1.0, 1.0 };
 const GLfloat lightDiffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-const GLfloat lightPosition[] = { 0.0, 0.0, -20.0, 1.0 };
+const GLfloat lightPosition[] = { 0.0, 0.0, 0.0, 1.0 };
 const GLfloat mat_ambient[] ={0.0,0.0,0.1,1.0};
 const GLfloat mat_diffuse[] ={0.1,0.5,0.8,1.0};
 const GLfloat mat_specular[] ={0.0,0.0,0.0,1.0};
 const GLfloat mat_shininess[] ={10.0};
-const GLfloat mat_ambient_o[] ={0.3,0.3,0.3,1.0};
-const GLfloat mat_diffuse_o[] ={0.8,0.8,0.8,1.0};
+const GLfloat mat_ambient_o[] ={0.4,0.4,0.0,1.0};
+const GLfloat mat_diffuse_o[] ={1.0,1.0,1.0,1.0};
 const GLfloat mat_specular_o[] ={0.0,0.0,0.0,1.0};
 const GLfloat mat_shininess_o[] ={0.0};
+const GLfloat mat_ambient_c[] ={1.0,1.0,1.0,1.0};
+const GLfloat mat_diffuse_c[] ={1.0,1.0,1.0,0.2};
+const GLfloat mat_specular_c[] ={0.0,0.0,0.0,1.0};
+const GLfloat mat_shininess_c[] ={0.0};
 
 
 const GLfloat fogColor[4]= {0.2f, 0.2f, 0.2f, 0.5f};
@@ -32,13 +35,12 @@ bool blend = false;
 bool fog = true;
 GLfloat xRot = 0;
 GLfloat yRot = 0;
-GLfloat zoom = -20;
+GLfloat zoom = -30;
 GLint WindowWidth = 640;
 GLint WindowHeight = 480;
 std::vector<GLuint> texture;
 bool keystate[256];
 char FPS[1000];
-//freetype::font_data our_font;
 ArcBall_t* arc;
 control* a;
 GLUquadricObj *quadratic;
@@ -80,29 +82,16 @@ void reshape(int width, int height)
 
 void testkey()
 {
-    if(keystate['Q']==true)exit(0);
-    if(keystate['D']==true)
-    {
-        yRot+=2;
-    }
-    if(keystate['A']==true)
-    {
-        yRot-=2;
-    }
-    if(keystate['W']==true)
-    {
-        xRot-=2;
-    }
-    if(keystate['S']==true)
-    {
-        xRot+=2;
+    if(keystate['Q']==true||keystate['q']==true||keystate[27]==true)exit(0);
+    if(keystate['M']==true||keystate['m']==true){
+        flag = true;
     }
 
 }
 
 void testdrag()
 {
-    if (isRClicked)													// 如果右键按下，这重置所有的变量
+    if (isRClicked)
     {
 		Matrix3fSetIdentity(&LastRot);
 		Matrix3fSetIdentity(&ThisRot);
@@ -149,11 +138,6 @@ void keyup(unsigned char key, int x, int y)
 
 void mouse(int button,int state,int x,int y)
 {
-    switch(button)
-    {
-
-        break;
-    }
 
     if(button==GLUT_LEFT_BUTTON&&state==GLUT_UP)
     {
@@ -171,6 +155,14 @@ void mouse(int button,int state,int x,int y)
     {
         isRClicked = true;
     }
+    if(button==GLUT_WHEEL_UP)
+    {
+        zoom++;
+    }
+    else if(button==GLUT_WHEEL_DOWN)
+    {
+        zoom--;
+    }
 
     MousePt.s.X = (GLfloat)x;
     MousePt.s.Y = (GLfloat)y;
@@ -180,45 +172,6 @@ void mousemove(int x,int y)
 {
     MousePt.s.X = (GLfloat)x;
     MousePt.s.Y = (GLfloat)y;
-}
-
-void loadGLTexture(std::string filename)
-{
-    FIBITMAP* dib = NULL;
-    char s[1000];
-    GetCurrentDirectory(1000,s);
-    std::string a;
-    a.assign(s);
-    a.append("\\"+filename);
-    //FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
-    //fif = FreeImage_GetFileType(a.c_str(),0);
-    dib = FreeImage_Load(FIF_BMP, "Crate.bmp",BMP_DEFAULT);
-    FIBITMAP *temp = FreeImage_ConvertTo24Bits(dib);
-    FreeImage_Unload(dib);
-    dib = temp;
-    BYTE *bits = new BYTE[FreeImage_GetWidth(dib) * FreeImage_GetHeight(dib) * 3];
-    BYTE *pixels = (BYTE*)FreeImage_GetBits(dib);
-    for(int pix=0; pix<FreeImage_GetWidth(dib) * FreeImage_GetHeight(dib); pix++)
-    {
-        bits[pix*3+0]=pixels[pix*3+2];
-        bits[pix*3+1]=pixels[pix*3+1];
-        bits[pix*3+2]=pixels[pix*3+0];
-    }
-
-    GLuint i;
-    glGenTextures( 1, &i );
-    glBindTexture( GL_TEXTURE_2D, i );
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, FreeImage_GetWidth(dib), FreeImage_GetHeight(dib), 0,GL_RGB, GL_UNSIGNED_BYTE, bits );
-    texture.push_back(i);
-    FreeImage_Unload(dib);
-}
-static void loadGLTextures()
-{
-    loadGLTexture("Crate.bmp");
 }
 
 static void idle(void)
@@ -234,10 +187,9 @@ static void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    glTranslatef(0.0,0.0, zoom );
-    glRotatef( xRot,  1.0,  0.0,  0.0 );
-    glRotatef( yRot,  0.0,  1.0,  0.0 );
+    glTranslatef(0,0,zoom);
     glMultMatrixf(Transform.M);
+    glTranslatef(-a->c->ask_position().y+5,-a->c->ask_position().z+5,-a->c->ask_position().x+5);
 //----------------------------------------------------------------//
 
     coordinate vec;
@@ -246,8 +198,8 @@ static void display(void)
     {
         vec = a->ask_position(i);
         glPushMatrix();
-
         glTranslatef(-5.0,-5.0,-5.0);
+
         glMaterialfv(GL_FRONT,GL_AMBIENT,mat_ambient);
         glMaterialfv(GL_FRONT,GL_DIFFUSE,mat_diffuse);
         glMaterialfv(GL_FRONT,GL_SPECULAR,mat_specular);
@@ -257,6 +209,7 @@ static void display(void)
         glPopMatrix();
     }
 
+
 //----------------------------------------------------------------//
 
 
@@ -264,78 +217,56 @@ static void display(void)
     glEnable( GL_BLEND );
     glDepthMask(GL_FALSE);
     glPushMatrix();
+    glMaterialfv(GL_FRONT,GL_AMBIENT,mat_ambient_c);
+    glMaterialfv(GL_FRONT,GL_DIFFUSE,mat_diffuse_c);
+    glMaterialfv(GL_FRONT,GL_SPECULAR,mat_specular_c);
+    glMaterialfv(GL_FRONT,GL_SHININESS,mat_shininess_c);
 
+    vec = a->c->ask_position();
+    glTranslatef(-5.0+vec.x,-5.0+vec.z,-5.0+vec.y);
     vec = a->c->get_axis();
 
-    if(fabs(vec.y)>1e-8)
+    if(fabs(vec.x)>1e-8)
     {
-        if(fabs(vec.x)<1e-8)glRotatef((vec.y/fabs(vec.y))*90,0.0,1.0,0.0);
-        else if(fabs(vec.x)>1e-8)glRotatef((vec.y/fabs(vec.y))*angle(coordinate(1,0,0),coordinate(vec.x,vec.y,0))/pi*180,0.0,1.0,0.0);
+        if(fabs(vec.y)<1e-8)glRotatef((vec.x/fabs(vec.x))*90,0.0,1.0,0.0);
+        else glRotatef((vec.x/fabs(vec.x))*angle(coordinate(0,1,0),coordinate(vec.x,vec.y,0))/pi*180,0.0,1.0,0.0);
     }
-
+    if(fabs(vec.x)<1e-8&&vec.y<-1e-8)glRotatef(180,0.0,1.0,0.0);
     if(fabs(vec.z)>1e-8)
     {
         if(fabs(vec.x)<1e-8&&fabs(vec.y)<1e-8)glRotatef(-(vec.z/fabs(vec.z))*90,1.0,0.0,0.0);
-        else glRotatef(-(vec.z/fabs(vec.z))*angle(coordinate(vec.x,vec.y,0),coordinate(vec.x,vec.y,vec.z))/pi*180,1.0,0.0,0.0);
+        else glRotatef(-(vec.z/fabs(vec.z))*(angle(coordinate(sqrt(pow(vec.x,2)+pow(vec.y,2)),0,0),coordinate(sqrt(pow(vec.x,2)+pow(vec.y,2)),0,vec.z))/pi*180),1.0,0.0,0.0);
     }
 
-    vec = a->c->ask_position();
-    glTranslatef(-5.0,-5.0,-5.0-a->c->get_height()/2);
-    glTranslatef(vec.x,vec.z,vec.y);
-    gluCylinder(quadratic,a->c->get_radius(),a->c->get_radius(),a->c->get_height(),32,32);
+
+
+    glTranslatef(0,0,-0.5-a->c->get_height()/2);
+    gluCylinder(quadratic,a->c->get_radius()+0.5,a->c->get_radius()+0.5,a->c->get_height(),32,32);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(0.0,0.0,0.0);
+    for(int i=0; i<=32; ++i)glVertex3f((a->c->get_radius()+0.5)*cos(2*pi/32*i), (a->c->get_radius()+0.5)*sin(2*pi/32*i),0.0);
+    glEnd();
     glPopMatrix();
 
 
     glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    glTranslatef(-5.0,-5.0,-5.0);
     glMaterialfv(GL_FRONT,GL_AMBIENT,mat_ambient_o);
     glMaterialfv(GL_FRONT,GL_DIFFUSE,mat_diffuse_o);
     glMaterialfv(GL_FRONT,GL_SPECULAR,mat_specular_o);
     glMaterialfv(GL_FRONT,GL_SHININESS,mat_shininess_o);
-    glEnable(GL_TEXTURE_2D);
-
-    glScalef(5.0,5.0,5.0);
-    glBegin(GL_QUADS);
-      glNormal3f(  0.0,  0.0, 1.0 );
-      glTexCoord2f(0.0, 0.0 ); glVertex3f( -1.0, -1.0,  1.0 );
-      glTexCoord2f(1.0, 0.0 ); glVertex3f(  1.0, -1.0,  1.0 );
-      glTexCoord2f( 1.0, 1.0 ); glVertex3f(  1.0,  1.0,  1.0 );
-      glTexCoord2f( 0.0, 1.0 );glVertex3f( -1.0,  1.0,  1.0 );
-
-      glNormal3f(  0.0,  0.0, -1.0 );
-      glTexCoord2f(1.0, 0.0 ); glVertex3f( -1.0, -1.0, -1.0 );
-      glTexCoord2f(1.0, 1.0 ); glVertex3f( -1.0,  1.0, -1.0 );
-      glTexCoord2f(0.0, 1.0 ); glVertex3f(  1.0,  1.0, -1.0 );
-      glTexCoord2f(0.0, 0.0 ); glVertex3f(  1.0, -1.0, -1.0 );
-
-      glNormal3f(  1.0,  0.0,  0.0 );
-      glTexCoord2f(1.0, 0.0 ); glVertex3f(  1.0, -1.0, -1.0 );
-      glTexCoord2f(1.0, 1.0 ); glVertex3f(  1.0,  1.0, -1.0 );
-      glTexCoord2f(0.0, 1.0 ); glVertex3f(  1.0,  1.0,  1.0 );
-      glTexCoord2f(0.0, 0.0 ); glVertex3f(  1.0, -1.0,  1.0 );
-
-      glNormal3f( -1.0,  0.0,  0.0 );
-      glTexCoord2f(0.0, 0.0 ); glVertex3f( -1.0, -1.0, -1.0 );
-      glTexCoord2f(1.0, 0.0 ); glVertex3f( -1.0, -1.0,  1.0 );
-      glTexCoord2f(1.0, 1.0 ); glVertex3f( -1.0,  1.0,  1.0 );
-      glTexCoord2f(0.0, 1.0 ); glVertex3f( -1.0,  1.0, -1.0 );
-
-      glNormal3f(  0.0,  1.0,  0.0 );
-      glTexCoord2f( 0.0, 1.0 ); glVertex3f( -1.0,  1.0, -1.0 );
-      glTexCoord2f(0.0, 0.0 ); glVertex3f( -1.0,  1.0,  1.0 );
-      glTexCoord2f( 1.0, 0.0 ); glVertex3f(  1.0,  1.0,  1.0 );
-      glTexCoord2f( 1.0, 1.0 ); glVertex3f(  1.0,  1.0, -1.0 );
-
-      glNormal3f(  0.0, -1.0,  0.0 );
-      glTexCoord2f(1.0, 1.0 ); glVertex3f( -1.0, -1.0, -1.0 );
-      glTexCoord2f(0.0, 1.0 );glVertex3f(  1.0, -1.0, -1.0 );
-      glTexCoord2f(0.0, 0.0 ); glVertex3f(  1.0, -1.0,  1.0 );
-      glTexCoord2f(1.0, 0.0 ); glVertex3f( -1.0, -1.0,  1.0 );
+    glBegin(GL_LINES);
+    for(int i=-50;i<=50;i++)
+    {
+        glVertex3f(-50,0,i);
+        glVertex3f(50,0,i);
+        glVertex3f(i,0,-50);
+        glVertex3f(i,0,50);
+    }
     glEnd();
     glPopMatrix();
 
     glDisable( GL_BLEND );
-    glDisable(GL_TEXTURE_2D);
     glDepthMask(GL_TRUE);
 
 
@@ -366,12 +297,12 @@ int main(int argc, char *argv[])
     glutMotionFunc(mousemove);
     glutIdleFunc(idle);
 
-    FreeImage_Initialise();
-//    our_font.init("test.TTF", 16);
     arc = new ArcBall_t(640.0f, 480.0f);
 
-    loadGLTextures();
     glShadeModel( GL_SMOOTH );
+    glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
+    glLineWidth(0.1);
     glClearColor(0.2f,0.2f,0.2f,0.5f);
 
     glLightfv( GL_LIGHT1, GL_AMBIENT, lightAmbient );
@@ -380,14 +311,6 @@ int main(int argc, char *argv[])
 
     glEnable( GL_LIGHT1 );
     glEnable(GL_LIGHTING);
-
-    /*glFogi(GL_FOG_MODE, GL_EXP);
-    glFogfv(GL_FOG_COLOR, fogColor);
-    glFogf(GL_FOG_DENSITY, 0.35f);
-    glHint(GL_FOG_HINT, GL_DONT_CARE);
-    glFogf(GL_FOG_START, 1.0f);
-    glFogf(GL_FOG_END, 5.0f);
-    glEnable(GL_FOG);*/
 
     glClearDepth( 1.0 );
     glEnable( GL_DEPTH_TEST );

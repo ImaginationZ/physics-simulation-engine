@@ -7,7 +7,7 @@
 #else
 # define assert(x) { }
 #endif
-#include <cstdlib>
+
 #include <GL/glut.h>
 
 	//2Î¬µã
